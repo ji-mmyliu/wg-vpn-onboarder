@@ -12,6 +12,7 @@ type Network struct {
 type Server struct {
 	Creds      Creds
 	ListenPort int
+	Address    string
 }
 
 type Client struct {

@@ -43,7 +43,7 @@ func SetupWireguardServer() {
 	// Generate network addresses
 	networkAddressPrefix := fmt.Sprintf("10.%d.0", networkID)
 	serverNetworkAddress := fmt.Sprintf("%s.1", networkAddressPrefix)
-	// networkAddress := fmt.Sprintf("%s.0", networkAddressPrefix)
+	networkAddress := fmt.Sprintf("%s.0", networkAddressPrefix)
 
 	// Generate main directory and server private and public keys
 	interfaceMainDir := fmt.Sprintf("%s/%s", WG_MAIN_DIR, interfaceName)
@@ -65,9 +65,20 @@ func SetupWireguardServer() {
 	tmpl, _ := template.New("serverConfigParser").Parse(string(serverConfigData))
 
 	// Prepare network information to be injected into server config template
-	serverCreds := models.Creds{PublicKey: serverPublicKey, PrivateKey: serverPrivateKey}
-	server := models.Server{Creds: serverCreds, ListenPort: 51280}
-	network := models.Network{Address: serverNetworkAddress, Server: server, Clients: []models.Client{}}
+	serverCreds := models.Creds{
+		PublicKey:  serverPublicKey,
+		PrivateKey: serverPrivateKey,
+	}
+	server := models.Server{
+		Creds:      serverCreds,
+		ListenPort: 51280,
+		Address:    serverNetworkAddress,
+	}
+	network := models.Network{
+		Address: networkAddress,
+		Server:  server,
+		Clients: []models.Client{},
+	}
 
 	// Write server configuration data to JSON file
 	serverJSON, _ := json.Marshal(network)
