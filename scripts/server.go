@@ -1,8 +1,10 @@
 package scripts
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"text/template"
 	"wg-vpn-onboarder/wgv/models"
 	"wg-vpn-onboarder/wgv/util"
@@ -10,12 +12,12 @@ import (
 
 const INTERFACE_NAME string = "wg%d"
 const WG_MAIN_DIR = "."
-const INTERFACE_CONFIG string = "%s/%s.conf"
+const INTERFACE_CONFIG string = "%s/%s/%s.conf"
 
 func SetupWireguardServer() {
 	fmt.Println("Creating new server interface")
 
-	// EnsureWireguardInstalled()
+	EnsureWireguardInstalled()
 
 	interfaceId := 0
 	var interfaceName string
@@ -24,7 +26,7 @@ func SetupWireguardServer() {
 	// Find first interface ID that has not been used yet
 	for ; ; interfaceId++ {
 		interfaceName = fmt.Sprintf(INTERFACE_NAME, interfaceId)
-		configPath = fmt.Sprintf(INTERFACE_CONFIG, WG_MAIN_DIR, interfaceName)
+		configPath = fmt.Sprintf(INTERFACE_CONFIG, WG_MAIN_DIR, interfaceName, interfaceName)
 		if _, err := os.Stat(configPath); err != nil {
 			break
 		}
@@ -46,17 +48,17 @@ func SetupWireguardServer() {
 	// Generate main directory and server private and public keys
 	interfaceMainDir := fmt.Sprintf("%s/%s", WG_MAIN_DIR, interfaceName)
 	os.MkdirAll(interfaceMainDir, os.ModePerm)
-	// fmt.Println("cmd:", fmt.Sprintf("wg genkey | tee %s/server.private", interfaceMainDir))
-	// serverPrivateKey := util.RunShellCommand("wg", "genkey | tee server.private")
-	serverPrivateKey := util.RunShellCommand("wg", "genkey") //fmt.Sprintf("%s/server.private", interfaceMainDir))
+	serverPrivateKey := strings.TrimSpace(util.ShellCommand("wg", "genkey"))
 
 	writePrivateKey, _ := os.OpenFile(fmt.Sprintf("%s/server.private", interfaceMainDir), os.O_RDWR|os.O_CREATE, 0755)
 	fmt.Fprint(writePrivateKey, serverPrivateKey)
 
-	serverPublicKey := util.RunShellCommand("wg", "pubkey", "<", "/etc/wireguard/server.private") //, interfaceMainDir)) // | tee %s/server.public", interfaceMainDir, interfaceMainDir))
+	serverPublicKey := strings.TrimSpace(util.ShellCommandWithInput(fmt.Sprintf("%s/server.private", interfaceMainDir), "wg", "pubkey")) //, interfaceMainDir)) // | tee %s/server.public", interfaceMainDir, interfaceMainDir))
+	writePublicKey, _ := os.OpenFile(fmt.Sprintf("%s/server.public", interfaceMainDir), os.O_RDWR|os.O_CREATE, 0755)
+	fmt.Fprint(writePublicKey, serverPublicKey)
 
 	// Format configuration file and write to designated location
-	f, _ := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE, 0755) // 0600
+	serverConfigWriter, _ := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE, 0755) // 0600
 
 	// Read server config template file and prepare parser
 	serverConfigData, _ := os.ReadFile("templates/server_config.conf")
@@ -67,5 +69,11 @@ func SetupWireguardServer() {
 	server := models.Server{Creds: serverCreds, ListenPort: 51280}
 	network := models.Network{Address: serverNetworkAddress, Server: server, Clients: []models.Client{}}
 
-	tmpl.Execute(f, &network)
+	// Write server configuration data to JSON file
+	serverJSON, _ := json.Marshal(network)
+	serverJSONWriter, _ := os.OpenFile(fmt.Sprintf("%s/%s.json", interfaceMainDir, interfaceName), os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	fmt.Fprint(serverJSONWriter, string(serverJSON))
+
+	// Format and write configuration file
+	tmpl.Execute(serverConfigWriter, &network)
 }

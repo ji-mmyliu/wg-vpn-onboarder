@@ -3,13 +3,18 @@ package scripts
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"wg-vpn-onboarder/wgv/util"
 )
 
 func EnsureWireguardInstalled() {
-	wireguardTestOutput := util.RunShellCommand("command", "-v", "wg")
-	if len(wireguardTestOutput) > 0 {
+	_, err := exec.LookPath("wg")
+	// wireguardTestOutput := util.ShellCommand("command", "-v", "wg")
+	// if len(wireguardTestOutput) > 0 {
+	// 	return
+	// }
+	if err == nil {
 		return
 	}
 
@@ -25,6 +30,6 @@ func EnsureWireguardInstalled() {
 }
 
 func InstallWireguard() {
-	util.RunShellCommand("sudo", "apt-get", "update", "-y")
-	util.RunShellCommand("sudo", "apt-get", "install", "-y", "wireguard")
+	util.ShellCommand("sudo", "apt-get", "update", "-y")
+	util.ShellCommand("sudo", "apt-get", "install", "-y", "wireguard")
 }
