@@ -11,7 +11,7 @@ func main() {
 		scripts.SetupWireguardServer()
 		break
 	case "newclient":
-		scripts.OnboardClient()
+		scripts.OnboardNewClient()
 		break
 	}
 }

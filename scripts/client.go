@@ -2,6 +2,7 @@ package scripts
 
 import "fmt"
 
-func OnboardClient() {
+func OnboardNewClient() {
 	fmt.Println("Onboarding client")
+
 }
