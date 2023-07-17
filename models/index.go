@@ -6,19 +6,26 @@ type Network struct {
 
 	InterfaceName string
 	ID            uint
+	AddressPrefix string
 	Address       string
 }
 
 type Server struct {
 	Creds      Creds
-	ListenPort int
+	ListenPort uint
 	Address    string
+	Endpoint   string
 }
 
 type Client struct {
 	Creds   Creds
 	ID      uint
 	Address string
+
+	PeerPublicKey  string
+	PeerEndpoint   string
+	PeerListenPort uint
+	NetworkAddress string
 }
 
 type Creds struct {

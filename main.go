@@ -7,11 +7,19 @@ import (
 
 func main() {
 	switch os.Args[1] {
-	case "newserver":
-		scripts.SetupWireguardServer()
+	case "server":
+		switch os.Args[2] {
+		case "new":
+			scripts.SetupWireguardServer()
+			break
+		}
 		break
-	case "newclient":
-		scripts.OnboardNewClient()
+	case "client":
+		switch os.Args[2] {
+		case "new":
+			scripts.OnboardNewClient()
+			break
+		}
 		break
 	}
 }

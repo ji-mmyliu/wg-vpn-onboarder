@@ -1,17 +1,27 @@
 package util
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 type ValidateInputFunction[T any] func(T) bool
 
-func GetInput[T any](prompt string, def T, validate ValidateInputFunction[T]) T {
+func GetInput[T any](prompt string, defaultVal any, validate ValidateInputFunction[T]) T {
 	for true {
-		fmt.Printf("%s [%s]: ", prompt, fmt.Sprint(def))
+		var defaultValStr string
+		if defaultVal == nil {
+			defaultValStr = "required"
+		} else {
+			defaultValStr = fmt.Sprint(defaultVal)
+		}
+
+		fmt.Printf("== %s [%s]: ", prompt, defaultValStr)
 		var res T
 		nScanned, err := fmt.Scanln(&res)
 
-		fmt.Println("Scanned:", nScanned)
-		if nScanned == 0 {
+		if defaultVal != nil && nScanned == 0 {
+			def := defaultVal.(T)
 			return def
 		}
 
@@ -20,7 +30,7 @@ func GetInput[T any](prompt string, def T, validate ValidateInputFunction[T]) T 
 		}
 
 		// Validation failed. Prompt for retry
-		fmt.Println("Invalid input; Please try again.")
+		fmt.Fprintln(os.Stderr, "Invalid input; Please try again.")
 	}
 	panic(nil)
 }
