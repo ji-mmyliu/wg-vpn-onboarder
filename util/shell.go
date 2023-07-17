@@ -29,3 +29,18 @@ func ShellCommandWithInput(inputFileName string, cmd string, args ...string) str
 
 	return string(stdout)
 }
+
+func ShellCommandWithInputToConsole(inputFileName string, cmd string, args ...string) {
+	processStdin, _ := os.Open(inputFileName)
+
+	fullShellCommand := exec.Command(cmd, args...)
+	fullShellCommand.Stdin = processStdin
+	fullShellCommand.Stdout = os.Stdout
+	err := fullShellCommand.Run()
+
+	if err != nil {
+		panic(err.Error())
+	}
+}
+
+// qrencode -t ansiutf8 < tunnel.conf

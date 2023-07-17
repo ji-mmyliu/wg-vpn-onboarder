@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"text/template"
 	"wg-vpn-onboarder/wgv/models"
 	"wg-vpn-onboarder/wgv/util"
@@ -62,6 +63,14 @@ func SetupWireguardServer() {
 		},
 	)
 
+	dnsServer := util.GetInput[string](
+		"(Optional) enter a custom DNS server address",
+		"",
+		func(res string) bool {
+			return true
+		},
+	)
+
 	// Generate network addresses
 	networkAddressPrefix := fmt.Sprintf("10.%d.0", networkID)
 	serverNetworkAddress := fmt.Sprintf("%s.1", networkAddressPrefix)
@@ -94,10 +103,12 @@ func SetupWireguardServer() {
 		Endpoint:   endpoint,
 	}
 	network := models.Network{
+		InterfaceName: interfaceName,
 		AddressPrefix: networkAddressPrefix,
 		Address:       networkAddress,
 		Server:        server,
 		Clients:       []models.Client{},
+		DnsServer:     dnsServer,
 	}
 
 	// Write server configuration data to JSON file
@@ -109,4 +120,16 @@ func SetupWireguardServer() {
 	tmpl.Execute(serverConfigWriter, &network)
 
 	log.Printf("Successfully created new wireguard server interface %s!\n", interfaceName)
+}
+
+func EnableServer() {
+	interfaceName, wgMainDir := ChooseExistingInterface()
+	util.ShellCommand("sudo", "wg-quick", "up", path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName)))
+	log.Println("Successfully started VPN interface", interfaceName)
+}
+
+func DisableServer() {
+	interfaceName, wgMainDir := ChooseExistingInterface()
+	util.ShellCommand("sudo", "wg-quick", "down", path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName)))
+	log.Println("Successfully shut down interface", interfaceName)
 }

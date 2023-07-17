@@ -6,50 +6,14 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"text/template"
 	"wg-vpn-onboarder/wgv/models"
 	"wg-vpn-onboarder/wgv/util"
 )
 
 func OnboardNewClient() {
-	// fmt.Print("== Please enter the name of the interface ")
-
-	wgMainDir := util.GetInput[string](
-		"(Optional) enter the custom directory you are using to store WireGuard configurations",
-		WG_MAIN_DIR,
-		func(res string) bool {
-			_, err := os.Stat(res)
-			return !os.IsNotExist(err)
-		},
-	)
-
-	folders := ListInterfacesFromDir(wgMainDir)
-
-	if len(folders) == 0 {
-		log.Fatalf("The directory '%s' does not contain any configurations. Please run '%s server new' first.", wgMainDir, os.Args[0])
-	}
-
-	for idx, folderInfo := range folders {
-		fmt.Printf("(%d) %s\n", idx+1, folderInfo.Name())
-	}
-	// fmt.Print("== Please enter the number associated with the interface you would like to use: ")
-	interfaceChoiceIdx := util.GetInput[int](
-		"Please enter the number associated with the interface you would like to use",
-		1,
-		func(res int) bool {
-			return res >= 1 && res <= len(folders)
-		},
-	)
-
-	// var interfaceChoiceIdx int
-	// _, err := fmt.Scan(&interfaceChoiceIdx)
-	// if err != nil {
-	// 	log.Fatal("Error while reading user input. Please re-run to try again.")
-	// }
-
-	interfaceChoiceIdx-- // Convert back to 0-indexed
-
-	interfaceName := folders[interfaceChoiceIdx].Name()
+	interfaceName, wgMainDir := ChooseExistingInterface()
 	log.Println("Generating configuration for new client on interface", interfaceName)
 
 	interfaceDir := path.Join(wgMainDir, interfaceName)
@@ -79,6 +43,7 @@ func OnboardNewClient() {
 		PeerEndpoint:   network.Server.Endpoint,
 		PeerListenPort: network.Server.ListenPort,
 		NetworkAddress: network.Address,
+		DnsServer:      network.DnsServer,
 	}
 
 	network.Clients = append(network.Clients, newClient)
@@ -102,4 +67,54 @@ func OnboardNewClient() {
 	clientTmpl.Execute(clientConfigWriter, &newClient)
 
 	log.Printf("Successfully generated client configuration 'client%d'!\n", clientID)
+}
+
+func GetClientConfig() {
+	interfaceName, wgMainDir := ChooseExistingInterface()
+
+	// serverConfigFilePath := path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName))
+	clientConfigFilePath := ChooseExistingClient(path.Join(wgMainDir, interfaceName), interfaceName)
+
+	options := []string{
+		"QR Code (for the WireGuard mobile app)",
+		"Paste configuration file content to output",
+		"Paste configuration file location",
+	}
+	for idx, option := range options {
+		fmt.Printf("(%d) %s\n", idx+1, option)
+	}
+	methodNum := util.GetInput[int](
+		"Please enter a selection from above",
+		1,
+		func(res int) bool {
+			return res >= 1 && res <= len(options)
+		},
+	)
+
+	switch methodNum {
+	case 1:
+		GenerateConfigQRCode(clientConfigFilePath)
+		break
+	case 2:
+		PasteConfigFileData(clientConfigFilePath)
+		break
+	case 3:
+		configFileAbsPath, err := filepath.Abs(clientConfigFilePath)
+		if err != nil {
+			panic(fmt.Sprint("error occurred when fetching full path of config file:", err.Error()))
+		}
+		fmt.Printf("\nAbsolute path of client config file:\n%s\n", configFileAbsPath)
+	}
+}
+
+func GenerateConfigQRCode(configFilePath string) {
+	util.ShellCommandWithInputToConsole(configFilePath, "qrencode", "-t", "ansiutf8")
+}
+
+func PasteConfigFileData(configFilePath string) {
+	configData, err := os.ReadFile(configFilePath)
+	if err != nil {
+		panic(fmt.Sprint("error occurred when fetching config file text data:", err.Error()))
+	}
+	fmt.Printf("\n%s\n", string(configData))
 }

@@ -8,6 +8,7 @@ type Network struct {
 	ID            uint
 	AddressPrefix string
 	Address       string
+	DnsServer     string
 }
 
 type Server struct {
@@ -26,6 +27,7 @@ type Client struct {
 	PeerEndpoint   string
 	PeerListenPort uint
 	NetworkAddress string
+	DnsServer      string
 }
 
 type Creds struct {
