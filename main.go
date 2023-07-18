@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"wg-vpn-onboarder/wgv/scripts"
-	"wg-vpn-onboarder/wgv/templates"
+
+	"github.com/ji-mmyliu/wg-vpn-onboarder/scripts"
+	"github.com/ji-mmyliu/wg-vpn-onboarder/templates"
 )
 
 func main() {

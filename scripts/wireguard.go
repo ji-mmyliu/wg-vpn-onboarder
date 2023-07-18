@@ -9,8 +9,9 @@ import (
 	"os/exec"
 	"path"
 	"strings"
-	"wg-vpn-onboarder/wgv/models"
-	"wg-vpn-onboarder/wgv/util"
+
+	"github.com/ji-mmyliu/wg-vpn-onboarder/models"
+	"github.com/ji-mmyliu/wg-vpn-onboarder/util"
 )
 
 func EnsureWireguardInstalled() {
