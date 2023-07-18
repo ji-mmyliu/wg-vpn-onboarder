@@ -13,7 +13,7 @@ go install github.com/ji-mmyliu/wg-vpn-onboarder@latest
 #### Method 2: Download release binary
 1. Download the program executable 
 ```bash
-curl --output /tmp/wgv https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/download/v1.0.2/wgv
+curl --output /tmp/wgv https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/download/v1.0.3/wgv
 chmod +x /tmp/wgv
 ```
 2. Copy the executable into a folder in your system's `PATH`:
