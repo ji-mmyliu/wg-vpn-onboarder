@@ -8,6 +8,7 @@ import (
 	"path"
 	"text/template"
 	"wg-vpn-onboarder/wgv/models"
+	"wg-vpn-onboarder/wgv/templates"
 	"wg-vpn-onboarder/wgv/util"
 )
 
@@ -88,7 +89,7 @@ func SetupWireguardServer() {
 	serverConfigWriter, _ := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE, 0755) // 0600
 
 	// Read server config template file and prepare parser
-	serverConfigData, _ := os.ReadFile("templates/server_config.conf")
+	serverConfigData, _ := templates.Asset("templates/server_config.conf")
 	tmpl, _ := template.New("serverConfigParser").Parse(string(serverConfigData))
 
 	// Prepare network information to be injected into server config template
