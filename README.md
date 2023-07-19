@@ -10,7 +10,7 @@ go install github.com/ji-mmyliu/wg-vpn-onboarder@latest
 ```
 *Note: this method produces the executable `wg-vpn-onboarder` rather than `wgv`*
 
-#### Method 2: Download release binary
+#### Method 2: Download release binary (works on `amd` systems only)
 1. Download the program executable 
 ```bash
 curl --output /tmp/wgv https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/download/v1.0.3/wgv
