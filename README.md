@@ -4,9 +4,16 @@ A program designed to quickly set up a Wireguard VPN using a Hub and Spoke confi
 To get started, either [build the program from source](https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/tag/v1.0.2) or follow the quick installation.
 
 ### Quick Installation
+#### Method 1: using `go install` (Recommended)
+```bash
+go install github.com/ji-mmyliu/wg-vpn-onboarder@latest
+```
+*Note: this method produces the executable `wg-vpn-onboarder` rather than `wgv`*
+
+#### Method 2: Download release binary (works on `amd` systems only)
 1. Download the program executable 
 ```bash
-curl --output /tmp/wgv https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/download/v1.0.2/wgv
+curl --output /tmp/wgv https://github.com/ji-mmyliu/wg-vpn-onboarder/releases/download/v1.0.3/wgv
 chmod +x /tmp/wgv
 ```
 2. Copy the executable into a folder in your system's `PATH`:
