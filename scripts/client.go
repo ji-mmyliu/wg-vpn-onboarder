@@ -18,6 +18,14 @@ func OnboardNewClient() {
 	interfaceName, wgMainDir := ChooseExistingInterface()
 	log.Println("Generating configuration for new client on interface", interfaceName)
 
+	nickname := util.GetInput[string](
+		"Please enter a nickname for this client",
+		"",
+		func(s string) bool {
+			return true
+		},
+	)
+
 	interfaceDir := path.Join(wgMainDir, interfaceName)
 	interfaceConfigPath := path.Join(interfaceDir, fmt.Sprintf("%s.conf", interfaceName))
 	interfaceJSONpath := path.Join(interfaceDir, fmt.Sprintf("%s.json", interfaceName))
@@ -37,9 +45,10 @@ func OnboardNewClient() {
 	clientID := uint(numExistingClients) + 1
 
 	newClient := models.Client{
-		Creds:   clientCreds,
-		ID:      clientID,
-		Address: fmt.Sprintf("%s.%d", network.AddressPrefix, clientID+1), // Server has ID of 1, clients start from 2
+		Creds:    clientCreds,
+		ID:       clientID,
+		Address:  fmt.Sprintf("%s.%d", network.AddressPrefix, clientID+1), // Server has ID of 1, clients start from 2
+		Nickname: nickname,
 
 		PeerPublicKey:  network.Server.Creds.PublicKey,
 		PeerEndpoint:   network.Server.Endpoint,
@@ -52,11 +61,13 @@ func OnboardNewClient() {
 
 	// Write network configuration data to JSON file
 	networkJSON, _ := json.Marshal(network)
-	networkJSONWriter, _ := os.OpenFile(fmt.Sprintf("%s/%s.json", interfaceDir, interfaceName), os.O_CREATE|os.O_WRONLY, os.ModePerm)
+	networkJSONWriter, _ := os.OpenFile(fmt.Sprintf("%s/%s.json", interfaceDir, interfaceName), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, os.ModePerm)
+	networkJSONWriter.Truncate(0)
+	networkJSONWriter.Seek(0, 0)
 	fmt.Fprint(networkJSONWriter, string(networkJSON))
 
 	// Format and write network configuration file
-	networkConfigWriter, _ := os.OpenFile(interfaceConfigPath, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	networkConfigWriter, _ := os.OpenFile(interfaceConfigPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	networkConfigTemplate, _ := templates.Asset("templates/server_config.conf")
 	networkTmpl, _ := template.New("networkConfigParser").Parse(string(networkConfigTemplate))
 	networkTmpl.Execute(networkConfigWriter, &network)
@@ -69,6 +80,7 @@ func OnboardNewClient() {
 	clientTmpl.Execute(clientConfigWriter, &newClient)
 
 	log.Printf("Successfully generated client configuration 'client%d'!\n", clientID)
+	log.Printf("Please make sure to restart the running server using '%s server restart' and export the client config using '%s client connect'", os.Args[0], os.Args[0])
 }
 
 func GetClientConfig() {

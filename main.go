@@ -23,9 +23,15 @@ func main() {
 			scripts.SetupWireguardServer()
 			break
 		case "up":
-			scripts.EnableServer()
+			interfaceName, wgMainDir := scripts.ChooseExistingInterface()
+			scripts.EnableServer(interfaceName, wgMainDir)
 		case "down":
-			scripts.DisableServer()
+			interfaceName, wgMainDir := scripts.ChooseExistingInterface()
+			scripts.DisableServer(interfaceName, wgMainDir)
+		case "restart":
+			interfaceName, wgMainDir := scripts.ChooseExistingInterface()
+			scripts.DisableServer(interfaceName, wgMainDir)
+			scripts.EnableServer(interfaceName, wgMainDir)
 		}
 		break
 	case "client":

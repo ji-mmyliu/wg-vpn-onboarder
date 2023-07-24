@@ -124,14 +124,12 @@ func SetupWireguardServer() {
 	log.Printf("Successfully created new wireguard server interface %s!\n", interfaceName)
 }
 
-func EnableServer() {
-	interfaceName, wgMainDir := ChooseExistingInterface()
+func EnableServer(interfaceName string, wgMainDir string) {
 	util.ShellCommand("sudo", "wg-quick", "up", path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName)))
 	log.Println("Successfully started VPN interface", interfaceName)
 }
 
-func DisableServer() {
-	interfaceName, wgMainDir := ChooseExistingInterface()
+func DisableServer(interfaceName string, wgMainDir string) {
 	util.ShellCommand("sudo", "wg-quick", "down", path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName)))
 	log.Println("Successfully shut down interface", interfaceName)
 }

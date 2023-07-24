@@ -19,9 +19,10 @@ type Server struct {
 }
 
 type Client struct {
-	Creds   Creds
-	ID      uint
-	Address string
+	Creds    Creds
+	ID       uint
+	Address  string
+	Nickname string
 
 	PeerPublicKey  string
 	PeerEndpoint   string
