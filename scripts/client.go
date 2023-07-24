@@ -86,8 +86,6 @@ func OnboardNewClient() {
 
 func GetClientConfig() {
 	interfaceName, wgMainDir := ChooseExistingInterface()
-
-	// serverConfigFilePath := path.Join(wgMainDir, interfaceName, fmt.Sprintf("%s.conf", interfaceName))
 	clientConfigFilePath := ChooseExistingClient(path.Join(wgMainDir, interfaceName), interfaceName)
 
 	options := []string{

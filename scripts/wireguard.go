@@ -116,7 +116,7 @@ func ChooseExistingClient(interfaceDir string, interfaceName string) string {
 
 	fmt.Printf("\nAvailable clients on interface %s:\n", interfaceName)
 	for idx, client := range network.Clients {
-		fmt.Printf("(%d) Client %d\n", idx+1, client.ID)
+		fmt.Printf("(%d) Client %d %s\n", idx+1, client.ID, client.Nickname)
 	}
 	selectedClient := util.GetInput[int](
 		"Please select a client number from above",
