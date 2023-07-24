@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/ji-mmyliu/wg-vpn-onboarder/models"
@@ -19,10 +20,10 @@ func OnboardNewClient() {
 	log.Println("Generating configuration for new client on interface", interfaceName)
 
 	nickname := util.GetInput[string](
-		"Please enter a nickname for this client",
+		"Please enter a nickname for this client (no spaces please)",
 		"",
 		func(s string) bool {
-			return true
+			return strings.Contains(s, " ")
 		},
 	)
 
