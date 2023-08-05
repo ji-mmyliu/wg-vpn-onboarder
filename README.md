@@ -7,8 +7,8 @@ To get started, either [build the program from source](https://github.com/ji-mmy
 #### Method 1: using `go install` (Recommended)
 ```bash
 go install github.com/ji-mmyliu/wg-vpn-onboarder@latest
+alias wgv=wg-vpn-onboarder # If you'd like, add this line to your shell profile (e.g. ~/.bashrc)
 ```
-*Note: this method produces the executable `wg-vpn-onboarder` rather than `wgv`*
 
 #### Method 2: Download release binary (works on `amd` systems only)
 1. Download the program executable 
