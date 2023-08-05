@@ -69,14 +69,14 @@ func OnboardNewClient() {
 
 	// Format and write network configuration file
 	networkConfigWriter, _ := os.OpenFile(interfaceConfigPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, os.ModePerm)
-	networkConfigTemplate, _ := templates.Asset("templates/server_config.conf")
+	networkConfigTemplate, _ := templates.Asset("wg-config-templates/server_config.conf")
 	networkTmpl, _ := template.New("networkConfigParser").Parse(string(networkConfigTemplate))
 	networkTmpl.Execute(networkConfigWriter, &network)
 
 	// Format and write new client configuration file
 	clientConfigPath := path.Join(interfaceDir, fmt.Sprintf("client%d.conf", clientID))
 	clientConfigWriter, _ := os.OpenFile(clientConfigPath, os.O_RDWR|os.O_CREATE, os.ModePerm)
-	clientConfigTemplate, _ := templates.Asset("templates/client_peer.conf")
+	clientConfigTemplate, _ := templates.Asset("wg-config-templates/client_peer.conf")
 	clientTmpl, _ := template.New("clientConfigParser").Parse(string(clientConfigTemplate))
 	clientTmpl.Execute(clientConfigWriter, &newClient)
 

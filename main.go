@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if len(os.Args) == 1 || strings.ToLower(os.Args[1]) == "help" {
-		helpText, _ := templates.Asset("templates/help.txt")
+		helpText, _ := templates.Asset("wg-config-templates/help.txt")
 		fmt.Println(string(helpText))
 		return
 	}
@@ -45,7 +45,7 @@ func main() {
 		}
 		break
 	case "version":
-		versionText, _ := templates.Asset("templates/version.txt")
+		versionText, _ := templates.Asset("wg-config-templates/version.txt")
 		fmt.Println(string(versionText))
 		break
 	}

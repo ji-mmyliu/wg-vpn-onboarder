@@ -177,7 +177,7 @@ func wgConfigTemplatesTemplatesGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "wg-config-templates/templates.go", size: 12288, mode: os.FileMode(420), modTime: time.Unix(1691209244, 0)}
+	info := bindataFileInfo{name: "wg-config-templates/templates.go", size: 12288, mode: os.FileMode(420), modTime: time.Unix(1691211860, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

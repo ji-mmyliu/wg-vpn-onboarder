@@ -90,7 +90,7 @@ func SetupWireguardServer() {
 	serverConfigWriter, _ := os.OpenFile(configPath, os.O_RDWR|os.O_CREATE, 0755) // 0600
 
 	// Read server config template file and prepare parser
-	serverConfigData, _ := templates.Asset("templates/server_config.conf")
+	serverConfigData, _ := templates.Asset("wg-config-templates/server_config.conf")
 	tmpl, _ := template.New("serverConfigParser").Parse(string(serverConfigData))
 
 	// Prepare network information to be injected into server config template
