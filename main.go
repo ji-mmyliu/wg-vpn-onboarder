@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/ji-mmyliu/wg-vpn-onboarder/scripts"
-	"github.com/ji-mmyliu/wg-vpn-onboarder/templates"
+	templates "github.com/ji-mmyliu/wg-vpn-onboarder/wg-config-templates"
 )
 
 func main() {

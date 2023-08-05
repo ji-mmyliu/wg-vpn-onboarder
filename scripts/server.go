@@ -9,8 +9,8 @@ import (
 	"text/template"
 
 	"github.com/ji-mmyliu/wg-vpn-onboarder/models"
-	"github.com/ji-mmyliu/wg-vpn-onboarder/templates"
 	"github.com/ji-mmyliu/wg-vpn-onboarder/util"
+	templates "github.com/ji-mmyliu/wg-vpn-onboarder/wg-config-templates"
 )
 
 func SetupWireguardServer() {

@@ -11,8 +11,8 @@ import (
 	"text/template"
 
 	"github.com/ji-mmyliu/wg-vpn-onboarder/models"
-	"github.com/ji-mmyliu/wg-vpn-onboarder/templates"
 	"github.com/ji-mmyliu/wg-vpn-onboarder/util"
+	templates "github.com/ji-mmyliu/wg-vpn-onboarder/wg-config-templates"
 )
 
 func OnboardNewClient() {
@@ -23,7 +23,7 @@ func OnboardNewClient() {
 		"Please enter a nickname for this client (no spaces please)",
 		"",
 		func(s string) bool {
-			return strings.Contains(s, " ")
+			return !strings.Contains(s, " ")
 		},
 	)
 
