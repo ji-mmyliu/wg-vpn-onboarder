@@ -1,1 +1,1 @@
-wgv version v1.0.4
+wgv version v1.0.7
