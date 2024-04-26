@@ -9,6 +9,7 @@ type Network struct {
 	AddressPrefix string
 	Address       string
 	DnsServer     string
+	IsExitNode    bool
 }
 
 type Server struct {
@@ -24,11 +25,12 @@ type Client struct {
 	Address  string
 	Nickname string
 
-	PeerPublicKey  string
-	PeerEndpoint   string
-	PeerListenPort uint
-	NetworkAddress string
-	DnsServer      string
+	PeerPublicKey   string
+	PeerEndpoint    string
+	PeerListenPort  uint
+	NetworkAddress  string
+	DnsServer       string
+	RouteToExitNode bool
 }
 
 type Creds struct {

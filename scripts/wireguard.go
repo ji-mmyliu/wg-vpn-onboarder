@@ -120,7 +120,7 @@ func ChooseExistingClient(interfaceDir string, interfaceName string) string {
 	}
 	selectedClient := util.GetInput[int](
 		"Please select a client number from above",
-		1,
+		len(network.Clients),
 		func(res int) bool {
 			return res >= 1 && res <= len(network.Clients)
 		},

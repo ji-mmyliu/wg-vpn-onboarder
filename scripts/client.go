@@ -51,11 +51,12 @@ func OnboardNewClient() {
 		Address:  fmt.Sprintf("%s.%d", network.AddressPrefix, clientID+1), // Server has ID of 1, clients start from 2
 		Nickname: nickname,
 
-		PeerPublicKey:  network.Server.Creds.PublicKey,
-		PeerEndpoint:   network.Server.Endpoint,
-		PeerListenPort: network.Server.ListenPort,
-		NetworkAddress: network.Address,
-		DnsServer:      network.DnsServer,
+		PeerPublicKey:   network.Server.Creds.PublicKey,
+		PeerEndpoint:    network.Server.Endpoint,
+		PeerListenPort:  network.Server.ListenPort,
+		NetworkAddress:  network.Address,
+		DnsServer:       network.DnsServer,
+		RouteToExitNode: network.IsExitNode,
 	}
 
 	network.Clients = append(network.Clients, newClient)

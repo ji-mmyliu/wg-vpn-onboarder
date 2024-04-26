@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 	"text/template"
 
 	"github.com/ji-mmyliu/wg-vpn-onboarder/models"
@@ -18,7 +19,6 @@ func SetupWireguardServer() {
 
 	EnsureWireguardInstalled()
 
-	interfaceId := 0
 	var interfaceName string
 	var configPath string
 
@@ -32,13 +32,29 @@ func SetupWireguardServer() {
 	)
 
 	// Find first interface ID that has not been used yet
-	for ; ; interfaceId++ {
-		interfaceName = fmt.Sprintf(INTERFACE_NAME, interfaceId)
+	availInterfaceId := 0
+	for ; ; availInterfaceId++ {
+		interfaceName = fmt.Sprintf(INTERFACE_NAME, availInterfaceId)
 		configPath = fmt.Sprintf(INTERFACE_CONFIG, wgMainDir, interfaceName, interfaceName)
 		if _, err := os.Stat(configPath); err != nil {
 			break
 		}
 	}
+
+	interfaceID := util.GetInput[int](
+		"Please enter an interface ID",
+		availInterfaceId,
+		func(res int) bool {
+			interfaceName = fmt.Sprintf(INTERFACE_NAME, res)
+			configPath = fmt.Sprintf(INTERFACE_CONFIG, wgMainDir, interfaceName, interfaceName)
+			if _, err := os.Stat(configPath); err != nil {
+				return true
+			}
+			return false
+		},
+	)
+
+	interfaceName = fmt.Sprintf(INTERFACE_NAME, interfaceID)
 
 	// Get preferences from user
 	networkID := util.GetInput[int](
@@ -64,6 +80,14 @@ func SetupWireguardServer() {
 			return res <= 65535
 		},
 	)
+
+	isExitNode := strings.ToLower(util.GetInput[string](
+		"Would you like this server to be an exit node? [Y/n]",
+		nil,
+		func(res string) bool {
+			return strings.ToLower(res) == "y" || strings.ToLower(res) == "n"
+		},
+	)) == "y"
 
 	dnsServer := util.GetInput[string](
 		"(Optional) enter a custom DNS server address",
@@ -111,6 +135,7 @@ func SetupWireguardServer() {
 		Server:        server,
 		Clients:       []models.Client{},
 		DnsServer:     dnsServer,
+		IsExitNode:    isExitNode,
 	}
 
 	// Write server configuration data to JSON file
@@ -122,6 +147,9 @@ func SetupWireguardServer() {
 	tmpl.Execute(serverConfigWriter, &network)
 
 	log.Printf("Successfully created new wireguard server interface %s!\n", interfaceName)
+	if isExitNode {
+		log.Printf("To enable this server as a VPN exit node, please run 'iptables -t nat -A POSTROUTING -o <public_interface> -j MASQUERADE' with the corresponding public network interface")
+	}
 }
 
 func EnableServer(interfaceName string, wgMainDir string) {
