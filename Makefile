@@ -8,3 +8,6 @@ setupstatic:
 
 build:
 	go build -o wgv .
+
+test:
+	go test -v ./...
